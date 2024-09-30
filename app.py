@@ -15,10 +15,10 @@ response = ssm_client.get_parameters(
         WithDecryption=True
 )
 
-rds_database = response['Parameters'][0]['Value']
-rds_host = response['Parameters'][1]['Value']
-rds_password = response['Parameters'][2]['Value']
-rds_user = response['Parameters'][3]['Value']
+#rds_database = response['Parameters'][0]['Value']
+#rds_host = response['Parameters'][1]['Value']
+#rds_password = response['Parameters'][2]['Value']
+#rds_user = response['Parameters'][3]['Value']
 
 
 @app.route('/')

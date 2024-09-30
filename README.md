@@ -101,7 +101,7 @@ In this guide, I will configure a Virtual Private Cloud (VPC) to deploy a Python
      - Network settings:
         - VPC
         - Public Subnet: enable *Public IP*
-        - Associate the web server security group
+        - Associate the bastion host security group
      - Advanced details:
         - IAM instance profile: Associate the role created previously
         - User data: *copy the next following lines to the user data*
@@ -110,11 +110,12 @@ In this guide, I will configure a Virtual Private Cloud (VPC) to deploy a Python
            sudo dnf install -y python3.9-pip
            pip install virtualenv
            sudo dnf install -y mariadb105-server
+           sudo dnf install -y git
            sudo service mariadb start
            sudo chkconfig mariadb on
            pip install flask
            pip install mysql-connector-python
-           pip install boto3
+           pip install boto3           
             ```
       - When the instance launch is finished, I connect to the terminal, and I clone this project using the respective URL:
         
@@ -133,6 +134,7 @@ In this guide, I will configure a Virtual Private Cloud (VPC) to deploy a Python
                 sudo chmod +x set-root-user.sh createdb.sh
                 sudo ./set-root-user.sh
                 sudo ./createdb.sh
+      
       - You can check if the database was created running the next command:
         
                 sudo mysql 

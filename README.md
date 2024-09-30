@@ -115,21 +115,18 @@ In this guide, I will configure a Virtual Private Cloud (VPC) to deploy a Python
            sudo chkconfig mariadb on
            pip install flask
            pip install mysql-connector-python
-           pip install boto3           
+           pip install boto3
+           git clone https://github.com/jhorvi24/architecture-ha-hs.git
             ```
-      - When the instance launch is finished, I connect to the terminal, and I clone this project using the respective URL:
-        
-           ```
-           git clone URL
-           ```
-        
+      - Once the instance launch is complete, I connect to the terminal, test that the libraries are installed and that the repository has been cloned to EC2.  
+                   
       - To run the web server, I run the next command in the directory where the app.py is located. You need to make sure that the security group has the appropriate port enabled.
 
                python3 -m virtualenv venv
                source venv/bin/activate
                python app.py 
                
-      - The database is not configured. I'm going to directory named db and I run the next commands
+      - The database is not configured. I'm going to directory named databases and I run the next commands
         
                 sudo chmod +x set-root-user.sh createdb.sh
                 sudo ./set-root-user.sh
@@ -143,13 +140,34 @@ In this guide, I will configure a Virtual Private Cloud (VPC) to deploy a Python
                 show tables;
                 SELECT * FROM Books; 
         
-      - The database is not configured in AWS RDS but in AWS EC2. So in the next step, I'm going to configure AWS RDS.
-      
+      - The database is not configured in AWS RDS but in AWS EC2. So, later on, I will configure AWS RDS.
+      - From the instance terminal create the following file
+              sudo nano /etc/systemd/system/bookapp.service
+        
+      - This file should have the following code
+               [Unit]
+               Description=My Flask Application
+               
+               [Service]
+               User=ec2-user     
+               WorkingDirectory=/home/ec2-user/python-db-ssm
+               ExecStart=/usr/bin/python3 /home/ec2-user/ec2-rds-ssm-python/app.py
+               Restart=always
+               
+               [Install]
+               WantedBy=multi-user.target
+        
+      - You need reload the deamon
+              sudo systemctl daemon-reload
+      - You need to start the service
+              sudo systemctl start bookapp
+      - You must enable the service when the instance starts.
+              sudo systemctl enable bookapp 
 <hr>
    
 5. I'm going to the AWS RDS to configure the relational database service.
    
-   - I create a subnet group for privateSubnetA and privateSubnetB.
+   - I create a subnet group for privateSubnetAA and privateSubnetBB.
    - I create AWS RDS with the next parameters:       
    
       - Engine Type: MariaDB or MySQL

@@ -1,6 +1,6 @@
-# Configure a VPC to Deploy a Web Server and Database on AWS
+# Configure a VPC to Deploy a Secure, Highly Available, and Scalable Architecture on AWS
 
-In this guide, I'll configure a Virtual Private Cloud (VPC) to deploy a web server, written in Python, on an Amazon EC2 instance within a public subnet, and a MySQL database on AWS RDS within two private subnets.
+In this guide, I will configure a Virtual Private Cloud (VPC) to deploy a Python-based web server and a MySQL database in a secure, highly available, and scalable architecture.
 
 ![Flask](https://img.shields.io/badge/flask-%23000.svg?style=for-the-badge&logo=flask&logoColor=white) ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) ![AWS](https://img.shields.io/badge/Amazon_AWS-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white)
 
@@ -17,19 +17,31 @@ In this guide, I'll configure a Virtual Private Cloud (VPC) to deploy a web serv
      - **PublicSubnetA**:
           - Availability Zone: a
           - CIDR: 192.168.1.0/24
+            
+      - **PublicSubnetB**:
+          - Availability Zone: b
+          - CIDR: 192.168.2.0/24
       
      - **PrivateSubnetA**:
           - Availability Zone: a
-          - CIDR: 192.168.2.0/24
+          - CIDR: 192.168.3.0/24
       
      - **PrivateSubnetB**:
           - Availability Zone: b
-          - CIDR: 192.168.3.0/24
+          - CIDR: 192.168.4.0/24
+            
+     - **PrivateSubnetAA**:
+          - Availability Zone: a
+          - CIDR: 192.168.5.0/24
+      
+     - **PrivateSubnetBB**:
+          - Availability Zone: b
+          - CIDR: 192.168.6.0/24
 
    I need the VPC to have an Internet connection so I need to configure an **Internet Gateway**.
    - When the Internet Gateway is created, I attach it to the VPC
    - I create a Route Table
-   - In the Route Table I associate with the **Public Subnet** and I create a route for allow to connect to the Internet through the **Internet Gateway**  
+   - In the Route Table associate with the two **Public Subnet** and I create a route for allow to connect to the Internet through the **Internet Gateway**  
 
 <hr>
 2. I'll use the AWS System Manager service to store the connection parameters that the web server will use to connect to the database configured on AWS RDS.
@@ -47,23 +59,39 @@ In this guide, I'll configure a Virtual Private Cloud (VPC) to deploy a web serv
 
 <hr>
 
-3. I going to the AWS EC2 service and I create two security group.
+3. I going to the AWS EC2 service and I create four security groups.
 
       - The first security group has the next parameters:
+      
+         - Name: alb-SG
+         - Inboud rules:
+            - Type: Custom TCP
+            - Port Range: 80
+            - Source: Anywhere
+              
+      - The second security group has the next parameters:
       
          - Name: web-server-SG
          - Inboud rules:
             - Type: Custom TCP
             - Port Range: 5000
-            - Source: Anywhere
-            
-      - The second security group has the next parameters:
+            - Source: alb-SG *(The SG of the application load balancer)*
+              
+      - The third security group has the next parameters:
        
          - Name: database-SG
          - Inboud rules:
             - Type: MYSQL/Aurora
             - Port Range: 3306
-            - Source: web-server-SG *The SG of the web server*
+            - Source: web-server-SG *(The SG of the web server)*
+
+      - The four security group has the next parameters:
+       
+         - Name: bastionHost-SG
+         - Inboud rules:
+            - Type: ssh
+            - Port Range: 22
+            - Source: MyIP
 <hr>
 
 4. I going to the AWS EC2 service and I launch an EC2 instance in the **PublicSubnet** with the next configurations

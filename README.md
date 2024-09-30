@@ -152,7 +152,7 @@ In this guide, I will configure a Virtual Private Cloud (VPC) to deploy a Python
                        
                [Service]
                User=ec2-user     
-               WorkingDirectory=/home/ec2-user/python-db-ssm
+               WorkingDirectory=/home/ec2-user/ec2-rds-ssm-python
                ExecStart=/usr/bin/python3 /home/ec2-user/ec2-rds-ssm-python/app.py
                Restart=always
                
@@ -212,5 +212,37 @@ In this guide, I will configure a Virtual Private Cloud (VPC) to deploy a Python
    
 <hr>
 
-7. Finally, you can test whether the application connects to the database in AWS RDS.
+7. I'm going to configure the Auto Scaling Group and the Application Load Balancer.
+   
+   -Go to EC2 service in AWS.
+   - Select the instance (Bastion Host) launched in the public Subnet and create an AMI.
+   - Create a Launch Template with the AMI created before. For the Launch Template Configuration:
+      - Do not choose VPC.
+      - Assign IAM Role.
+      - Create key Pair: PEM
+   - Go to Auto Scaling group.
+      - Choose the Launch Template configured before.
+      - Do not choose Load Balancer.
+      - Select the private subnets in which the instances managed by the Auto Scaling group will be launched.
+      - Configure the Scaling Policy.
+   - Go to Load Balancers
+      - Choose Application Load Balancer
+      - Choose the VPC created before and the two Public Subnets.
+      - Create a Target Group.
+         - Configure the Port in 5000 (web server)
+         - Define the Health check path as: /health       
+   - In the Auto Scaling group configuration, associate the load balancer with Auto Scaling Group.
+           
+   
+9. Finally, you can test whether the application response from the Application Load Balancer.
+    
+   - If the application does not respond from the application load balancer you check the next:
+      - Restart the service using System Manager
+         - Select Fleet Manager.
+         - Select the IDs of the instances running in the private subnet.
+         - Search AWS-RunShellScript
+         - Write the next commands:
+                  sudo systemctl restart bookapp.
+
+      - Check the securities Groups. 
    

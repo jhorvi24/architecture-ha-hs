@@ -242,6 +242,7 @@ In this guide, I will configure a Virtual Private Cloud (VPC) to deploy a Python
          - Select the IDs of the instances running in the private subnet.
          - Search AWS-RunShellScript
          - Write the next commands:
+           
                   sudo systemctl restart bookapp.
 
       - Check the securities Groups. 

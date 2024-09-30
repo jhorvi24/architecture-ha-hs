@@ -142,12 +142,14 @@ In this guide, I will configure a Virtual Private Cloud (VPC) to deploy a Python
         
       - The database is not configured in AWS RDS but in AWS EC2. So, later on, I will configure AWS RDS.
       - From the instance terminal create the following file
-              sudo nano /etc/systemd/system/bookapp.service
+
+                sudo nano /etc/systemd/system/bookapp.service
         
       - This file should have the following code
+        
                [Unit]
                Description=My Flask Application
-               
+                       
                [Service]
                User=ec2-user     
                WorkingDirectory=/home/ec2-user/python-db-ssm
@@ -158,10 +160,15 @@ In this guide, I will configure a Virtual Private Cloud (VPC) to deploy a Python
                WantedBy=multi-user.target
         
       - You need reload the deamon
+        
               sudo systemctl daemon-reload
+        
       - You need to start the service
+        
               sudo systemctl start bookapp
+        
       - You must enable the service when the instance starts.
+        
               sudo systemctl enable bookapp 
 <hr>
    
